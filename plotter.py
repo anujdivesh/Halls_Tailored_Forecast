@@ -180,9 +180,11 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
     degree_sign = u'\N{DEGREE SIGN}'
     fig, ax = plt.subplots(figsize=figsize, dpi=150)
     ax.text(-0.07, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
-    ax.text(-0.07, -0.080,"All date and time are in UTC. Page 5 shows the location of the Forecast. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
-    ax.text(0.825, -0.060,"Copyright 2023 TV-MET", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax.text(-0.07, -0.080,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+    ax.text(0.725, -0.060,"Copyright 2023 Tuvalu Met Service", transform=ax.transAxes,fontsize=8, verticalalignment='top')
     ax.text(0.95, -0.080,"Page 1 of 5", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+    
+
     ax.text(0.01, 1.12,"Tuvalu Ocean Forecast", transform=ax.transAxes,fontsize=16, verticalalignment='top', color='#2F5F8A')
     ax.text(0.01, 1.09,"Tuvalu Meteorological Service", transform=ax.transAxes,fontsize=8, verticalalignment='top', color='#2F5F8A')
     ax.text(0.01, 1.07,"Contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6, verticalalignment='top', color='#2F5F8A')
@@ -199,7 +201,6 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
     speed = 1
     for x in time:
         deg = WDIR[i]
-        print(deg)
         if deg <=0:
             deg+360
         if i == 0:
@@ -212,7 +213,7 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
 
         change = [speed * math.cos(angle), speed * math.sin(angle)]
         if is_multiple_of_three(i):
-            ax2.quiver(x, WSPD[i], x, y,zorder=1, color=windcolor(WSPD[i]),scale=25,width=0.01, edgecolor='black', linewidth=0.7,headwidth=2.5, headlength=2.5, headaxislength=2.4)
+            ax2.quiver(x, WSPD[i], change[0], change[1],zorder=1, color=windcolor(WSPD[i]),scale=25,width=0.01, edgecolor='black', linewidth=0.7,headwidth=2.5, headlength=2.5, headaxislength=2.4)
            # ax2.quiver(x, windspeedx[i], -1, 1,color=windcolor(windspeedx[i]),width=0.01, edgecolor='black', linewidth=0.7,headwidth=2.5, headlength=2.5, headaxislength=2.4)
 
         i+=1
@@ -305,6 +306,7 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
     ###PLOT 3 MEan WAVE PERIOD ###
 
     ###PLOT 4 TIDES ###
+    
     start_date = get_start_date()
     time_tide_min, tide_min, htindex, ltindex = generate_tides(tide_name,start_date,folder_tmp)
 
@@ -329,7 +331,7 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
 
     ###PLOT 5 VISIBILITY #########
     ##DUMMY
-    ax55 = fig.add_axes([0.06001, 0.25, 0.90, 0.05],sharex=ax4)
+    ax55 = fig.add_axes([0.06001, 0.25, 0.90, 0.05],sharex=ax2)
     ax55.plot(vis_tt.values, vis_df.values,color='white')
     ax55.yaxis.set_ticks([])
     setupAxis(ax55)
@@ -420,8 +422,8 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
         ['Wsp', 'Wind Speed (kts)'],
         ['Tm', 'Mean Period (s)']]
 
-    ax6 = fig.add_axes([0.33, 0.10, 0.90, 0.05])
-    ax6.text(-0.25, 1.19, 'Abbreviation:',fontsize=7,fontweight='bold',color='black',transform=ax6.transAxes, verticalalignment='top')
+    ax6 = fig.add_axes([0.26, 0.10, 0.90, 0.05])
+    ax6.text(-0.2, 1.19, 'Abbreviation:',fontsize=7,fontweight='bold',color='black',transform=ax6.transAxes, verticalalignment='top')
     table = ax6.table( cellText=data, loc='left', cellLoc='left', rowLoc='left', colLoc='left')
     table.auto_set_column_width(col=list(range(len(data))))
 
@@ -438,7 +440,7 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
         ['Gst','Typical Gust Speed (kts)'],
         ['Mwd','Mean Wave Direction (degrees)']]
 
-    ax7 = fig.add_axes([0.568, 0.10, 0.90, 0.05])
+    ax7 = fig.add_axes([0.498, 0.10, 0.90, 0.05])
     table = ax7.table( cellText=data2, loc='left', cellLoc='left', rowLoc='left', colLoc='left')
     table.auto_set_column_width(col=list(range(len(data))))
 
@@ -447,6 +449,14 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
     table.set_fontsize(6)
     table.scale(1, 0.7)
     ax7.axis('off')
+
+    #MAPPING
+    
+    station_name = getlocationmap(tide_name)
+    im2 = plt.imread(station_name)
+    ax99 = fig.add_axes([0.56, 0.070, 0.40, 0.14])
+    ax99.imshow(im2,aspect='auto')
+    ax99.axis('off')
     
     #LOGO
     im = plt.imread('Flag-Tuvalu.jpg')
@@ -518,8 +528,8 @@ def mslp_figure(tide_name):
     ax5.axis('off')
 
     ax2.text(-0.07, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
-    ax2.text(-0.07, -0.080,"All date and time are in UTC. Page 5 shows the location of the Forecast. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
-    ax2.text(0.825, -0.060,"Copyright 2023 TV-MET", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax2.text(-0.07, -0.080,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+    ax2.text(0.725, -0.060,"Copyright 2023 Tuvalu Met Service", transform=ax.transAxes,fontsize=8, verticalalignment='top')
     ax2.text(0.95, -0.080,"Page 5 of 5", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
     return fig
 
@@ -551,8 +561,8 @@ def produce_report(folder_tmp, report_name,location_name,target_lat,target_lon,t
             tab2.auto_set_column_width(col=list(range(len(df.columns))))
             ax.axis('off')
             ax.text(-0.07, -0.090,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
-            ax.text(-0.07, -0.11,"All date and time are in UTC. Page 5 shows the location of the Forecast. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
-            ax.text(0.825, -0.090,"Copyright 2023 TV-MET", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+            ax.text(-0.07, -0.11,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+            ax.text(0.725, -0.090,"Copyright 2023 Tuvalu Met Service", transform=ax.transAxes,fontsize=8, verticalalignment='top')
             ax.text(0.95, -0.11,"Page "+str(page_no)+" of 5", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
             page_no+=1
             pdf.savefig()
