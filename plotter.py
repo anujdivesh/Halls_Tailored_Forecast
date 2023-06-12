@@ -521,11 +521,12 @@ def mslp_figure(tide_name):
     ax2 = fig.add_axes([0.03, 0.03, 0.95, 0.90])
     ax2.imshow(im,aspect='auto')
     ax2.axis('off')
-
+    """
     im2 = plt.imread(station_name)
     ax5 = fig.add_axes([0.43, 0.070, 0.55, 0.22])
     ax5.imshow(im2,aspect='auto')
     ax5.axis('off')
+    """
 
     ax2.text(-0.07, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
     ax2.text(-0.07, -0.080,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
