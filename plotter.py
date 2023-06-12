@@ -179,9 +179,10 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
     
     degree_sign = u'\N{DEGREE SIGN}'
     fig, ax = plt.subplots(figsize=figsize, dpi=150)
-    ax.text(-0.05, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
-    ax.text(-0.05, -0.080,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6, verticalalignment='top',style='italic')
-    ax.text(0.76, -0.060,"Copyright 2023 Tuvalu Met Service", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax.text(-0.07, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax.text(-0.07, -0.080,"All date and time are in UTC. Page 5 shows the location of the Forecast. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+    ax.text(0.825, -0.060,"Copyright 2023 TV-MET", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax.text(0.95, -0.080,"Page 1 of 5", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
     ax.text(0.01, 1.12,"Tuvalu Ocean Forecast", transform=ax.transAxes,fontsize=16, verticalalignment='top', color='#2F5F8A')
     ax.text(0.01, 1.09,"Tuvalu Meteorological Service", transform=ax.transAxes,fontsize=8, verticalalignment='top', color='#2F5F8A')
     ax.text(0.01, 1.07,"Contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6, verticalalignment='top', color='#2F5F8A')
@@ -198,6 +199,7 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
     speed = 1
     for x in time:
         deg = WDIR[i]
+        print(deg)
         if deg <=0:
             deg+360
         if i == 0:
@@ -210,7 +212,7 @@ def first_page(folder_tmp,location_name,target_lat,target_lon,tide_name):
 
         change = [speed * math.cos(angle), speed * math.sin(angle)]
         if is_multiple_of_three(i):
-            ax2.quiver(x, WSPD[i], change[0], change[1],zorder=1, color=windcolor(WSPD[i]),scale=25,width=0.01, edgecolor='black', linewidth=0.7,headwidth=2.5, headlength=2.5, headaxislength=2.4)
+            ax2.quiver(x, WSPD[i], x, y,zorder=1, color=windcolor(WSPD[i]),scale=25,width=0.01, edgecolor='black', linewidth=0.7,headwidth=2.5, headlength=2.5, headaxislength=2.4)
            # ax2.quiver(x, windspeedx[i], -1, 1,color=windcolor(windspeedx[i]),width=0.01, edgecolor='black', linewidth=0.7,headwidth=2.5, headlength=2.5, headaxislength=2.4)
 
         i+=1
@@ -498,7 +500,8 @@ def create_table():
     
     return df
 
-def mslp_figure():
+def mslp_figure(tide_name):
+    station_name = getlocationmap(tide_name)
     fig, ax = plt.subplots(figsize=figsize, dpi=150)
     ax.text(-0.05, 1.09,"Regional MSLP and surface winds Map", transform=ax.transAxes,fontsize=12, verticalalignment='top', color='#2F5F8A')
     ax.axis('off')
@@ -509,9 +512,15 @@ def mslp_figure():
     ax2.imshow(im,aspect='auto')
     ax2.axis('off')
 
-    ax2.text(-0.05, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
-    ax2.text(-0.05, -0.080,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6, verticalalignment='top',style='italic')
-    ax2.text(0.76, -0.060,"Copyright 2023 Tuvalu Met Service", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    im2 = plt.imread(station_name)
+    ax5 = fig.add_axes([0.43, 0.070, 0.55, 0.22])
+    ax5.imshow(im2,aspect='auto')
+    ax5.axis('off')
+
+    ax2.text(-0.07, -0.060,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax2.text(-0.07, -0.080,"All date and time are in UTC. Page 5 shows the location of the Forecast. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+    ax2.text(0.825, -0.060,"Copyright 2023 TV-MET", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+    ax2.text(0.95, -0.080,"Page 5 of 5", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
     return fig
 
 def produce_report(folder_tmp, report_name,location_name,target_lat,target_lon,tide_name):
@@ -522,6 +531,7 @@ def produce_report(folder_tmp, report_name,location_name,target_lat,target_lon,t
         pdf.savefig()
         df = create_table()
         df_list = np.array_split(df, 3)
+        page_no = 2
         for table in df_list:
             
             colors = []
@@ -540,13 +550,29 @@ def produce_report(folder_tmp, report_name,location_name,target_lat,target_lon,t
                     colColours=["#c0c0c0"] * 11,cellColours=colors)
             tab2.auto_set_column_width(col=list(range(len(df.columns))))
             ax.axis('off')
-            ax.text(-0.05, -0.090,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
-            ax.text(-0.05, -0.11,"All date and time are in UTC. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6, verticalalignment='top',style='italic')
-            ax.text(0.76, -0.090,"Copyright 2023 Tuvalu Met Service", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+            ax.text(-0.07, -0.090,"Date Printed:"+dateLabel, transform=ax.transAxes,fontsize=8, verticalalignment='top')
+            ax.text(-0.07, -0.11,"All date and time are in UTC. Page 5 shows the location of the Forecast. For more information contact: tuvmet@gmail.com", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+            ax.text(0.825, -0.090,"Copyright 2023 TV-MET", transform=ax.transAxes,fontsize=8, verticalalignment='top')
+            ax.text(0.95, -0.11,"Page "+str(page_no)+" of 5", transform=ax.transAxes,fontsize=6.5, verticalalignment='top',style='italic')
+            page_no+=1
             pdf.savefig()
         
-        fig=mslp_figure()
+        fig=mslp_figure(tide_name)
         pdf.savefig()
         plt.close('all')
         plt.figure().clear()
     return None
+
+def getlocationmap(loc):
+    imagename = 'locations/Fun_Niutao_Ocean.png'
+    if loc == 'Hall_Nanumea_Channel':
+        imagename = 'locations/NanumeaChannel.png'
+    elif loc == 'Hall_Niutao_Channel':
+        imagename = 'locations/NiutaoChannel.png'
+    elif loc == 'Hall_Nui_Channel':
+        imagename = 'locations/NuiChannel.png'
+    elif loc == 'Hall_Fun_Niutao_Ocean':
+        imagename = 'locations/Fun_Niutao_Ocean.png'
+    elif loc == 'Hall_Funafuti_lagoon':
+        imagename = 'locations/FunafutiLagoon.png'
+    return imagename

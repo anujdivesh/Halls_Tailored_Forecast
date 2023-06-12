@@ -42,6 +42,7 @@ def hallsTailoredForecast(now):
         document_arr.append(str(tide_name)+'.pdf')
         lon = row['lon']
         lat = row['lat']
+        shortname = row['shortname']+"_"+now.strftime("%Y") + now.strftime("%m") + now.strftime("%d") +  now.strftime("%H")
         namesplit =tide_name.split('_')
         factor = ' Ocean' if namesplit[1] == 'Fun' else ''
         proper_name = namesplit[1]+" "+namesplit[2]+factor
@@ -63,7 +64,7 @@ def hallsTailoredForecast(now):
         msl_plots(1,gfsDataDir)
 
         ####PLOTTER#####
-        produce_report(tideFolder, str(tide_name)+'.pdf',proper_name,lat,lon,tide_name)
+        produce_report(tideFolder, str(shortname)+'.pdf',proper_name,lat,lon,tide_name)
 
         print('Report Generated Successfully!')
 
