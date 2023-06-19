@@ -4,9 +4,6 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 
-username = "svcSMTP-Cloud@spc.int"
-password = "m9Td#(fOVNcQj#z"
-mail_from = "svcSMTP-Cloud@spc.int"
 mail_to = "divesha@spc.int"
 mail_subject = "Tailored Wave Forecast TV"
 mail_body = "Talofa! <br/>"
